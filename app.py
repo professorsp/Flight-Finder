@@ -1,5 +1,5 @@
 from customtkinter import *
-import CTkListbox
+import CTkListbox.dwjd
 from CTkMessagebox import CTkMessagebox
 
 from fapi import flight_data
