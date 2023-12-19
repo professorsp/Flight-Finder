@@ -1,0 +1,77 @@
+import requests
+
+
+class flight_data():
+    url = "http://api.aviationstack.com/v1/flights?access_key=9ac30502406f16081b214a4fe0f5587a"
+
+    def __init__(self, api_key):
+        self.url =f"http://api.aviationstack.com/v1/flights?access_key={api_key}"
+        self.header = {
+            "dep_iata": None,
+            "arr_iata": None,
+            "dep_icao": None,
+            "arr_icao": None,
+            "flight_number": None,
+            "flight_iata": None,
+            "flight_icao": None,
+        }
+
+    def set_fligth_status(self, status=None):
+        parametrs = [
+            "scheduled",
+            "active",
+            "landed",
+            "cancelled",
+            "incident",
+            "diverted",
+        ]
+
+        if status in parametrs:
+            self.header["flight_status"] = status
+
+        else:
+            self.header["flight_status"] = None
+
+    def set_dep_iata(self, iata=None):
+        self.header["dep_iata"] = iata
+
+    def set_arr_iata(self, iata):
+        self.header["arr_iata"] = iata
+
+    def set_dep_icao(self, icao):
+        self.header["dep_icao"] = icao
+
+    def set_arr_icao(self, icao):
+        self.header["arr_icao"] = icao
+
+    def set_flight_number(self, numebr):
+        self.header["flight_number"] = numebr
+
+    def set_flight_iata(self, iata):
+        self.header["flight_iata"] = iata
+
+    def set_flight_icao(self, icao):
+        self.header["flight_icao"] = icao
+
+    def get_json(self):
+        for key in list(self.header.keys()):
+            if self.header[key] == None:
+                del self.header[key]
+
+        print(self.header)
+
+        try:
+            self.respone = requests.get(url=flight_data.url, params=self.header)
+            if self.respone.status_code == 200:
+                self.data = self.respone.json()
+                return self.data
+            else:
+                return {"error": None}
+
+        except ConnectionError:
+            return 0
+
+    def write_file(self, path):
+        file = open(path, "w")
+        file.write(self.respone.text)
+        file.close
