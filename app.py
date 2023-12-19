@@ -225,6 +225,6 @@ class graghic(flight_data):
 
 if __name__ == "__main__":
     root = CTk()
-    root.title(2)
+    root.title("Flight Finder")
     aa = graghic(api_key="9ac30502406f16081b214a4fe0f5587a", root=root)
     root.mainloop()
