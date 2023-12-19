@@ -1,6 +1,6 @@
 from fapi import flight_data
 
-api = flight_data()
+api = flight_data("your api key")
 
 api.set_arr_iata("your iata")
 
