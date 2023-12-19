@@ -1,11 +1,9 @@
 import requests
 
 
-class flight_data():
-    url = "http://api.aviationstack.com/v1/flights?access_key=9ac30502406f16081b214a4fe0f5587a"
-
+class flight_data:
     def __init__(self, api_key):
-        self.url =f"http://api.aviationstack.com/v1/flights?access_key={api_key}"
+        self.url = f"http://api.aviationstack.com/v1/flights?access_key={api_key}"
         self.header = {
             "dep_iata": None,
             "arr_iata": None,
@@ -61,7 +59,7 @@ class flight_data():
         print(self.header)
 
         try:
-            self.respone = requests.get(url=flight_data.url, params=self.header)
+            self.respone = requests.get(url=self.url, params=self.header)
             if self.respone.status_code == 200:
                 self.data = self.respone.json()
                 return self.data
