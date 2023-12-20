@@ -185,6 +185,8 @@ class graghic(flight_data):
             self.flight_list()
 
     def flight_list(self):
+        
+        self.listbox.insert(0, "See your search results by clicking the <Apply> button")
         self.listbox.delete(0, "end")
         self.count = self.data["pagination"]["count"]
         for i in range(self.count):
