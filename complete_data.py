@@ -53598,11 +53598,3 @@ class complete_data:
 
         self.map_widget.set_path([self.marker1.position, self.marker2.position])
 
-
-if __name__ == "__main__":
-    import json
-
-    data = json.load(open("text.json"))
-    root = tkp.CTk()
-    complete_data(0, root, data)
-    root.mainloop()
