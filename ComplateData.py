@@ -27,8 +27,6 @@ class ComplateData:
             tab = flight["flight"]["iata"]
             self.tabView.add(tab)
 
-            
-
 
 if __name__ == '__main__':
     import json
