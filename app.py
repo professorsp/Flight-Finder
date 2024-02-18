@@ -236,8 +236,7 @@ class graghic(flight_data):
     def show_fullData(self, val: str):
         print(val)
         index = int(val[: (val.index("/"))]) - 1
-        #com = complete_data(self.root, self.data["data"][index], self.geoData)
-
+        # com = complete_data(self.root, self.data["data"][index], self.geoData)
 
     def update_geoData(self):
         iatas = list()
@@ -279,10 +278,8 @@ class graghic(flight_data):
                             flight["flight"] == path.data[2]:
                         self.usefull_flight.append(flight)
 
-        print(len(self.usefull_flight))
-        for flight in self.usefull_flight:
-            print(flight)
-        json.dump(self.usefull_flight, open("CompleteData.json", "w"))
+        self.top_window = CTkToplevel(self.root)
+        com = ComplateData(self.top_window, self.usefull_flight, self.geoData)
 
     def markerClick(self, env: canvas_position_marker.CanvasPositionMarker):
         # path = canvas_path.CanvasPath()
@@ -304,5 +301,5 @@ class graghic(flight_data):
 if __name__ == "__main__":
     root = CTk()
     root.title("Flight Finder")
-    aa = graghic(api_key="9ac30502406f16081b214a4fe0f5587a", root=root)
+    aa = graghic(api_key="e5411ed9c2d96d6ee05e01743299d85b", root=root)
     root.mainloop()
