@@ -2,6 +2,7 @@ import json
 
 import requests
 from CTkMessagebox import CTkMessagebox
+from IPython.terminal.pt_inputhooks import tk
 from customtkinter import *
 from tkintermapview import TkinterMapView, canvas_path, canvas_position_marker
 
@@ -187,12 +188,12 @@ class graghic(flight_data):
         else:
             self.set_arr_icao(self.arr_icao)
 
-        # self.data = self.get_json()
-        self.data = json.load(open("data.json"))
+        self.data = self.get_json()
+        #self.data = json.load(open("data.json"))
 
         if self.data.get("error") == None:
-            # self.geoData = self.update_geoData()
-            self.geoData = json.load(open("geoData.json"))
+            self.geoData = self.update_geoData()
+            #self.geoData = json.load(open("geoData.json"))
             self.flight_map()
             self.flight_list()
         else:
@@ -234,9 +235,9 @@ class graghic(flight_data):
             )
 
     def show_fullData(self, val: str):
-        print(val)
         index = int(val[: (val.index("/"))]) - 1
-        # com = complete_data(self.root, self.data["data"][index], self.geoData)
+        self.top_window = CTkToplevel()
+        com = ComplateData(self.top_window, [self.data["data"][index]], self.geoData)
 
     def update_geoData(self):
         iatas = list()
