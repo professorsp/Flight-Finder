@@ -1,0 +1,137 @@
+[
+  {
+    "flight_date": "2023-12-08",
+    "flight_status": "scheduled",
+    "departure": {
+      "airport": "Haneda Airport",
+      "timezone": "Asia/Tokyo",
+      "iata": "HND",
+      "icao": "RJTT",
+      "terminal": "1",
+      "gate": null,
+      "baggage": null,
+      "delay": null,
+      "scheduled": "2023-12-08T09:00:00+00:00",
+      "estimated": "2023-12-08T09:00:00+00:00",
+      "actual": null,
+      "estimated_runway": null,
+      "actual_runway": null
+    },
+    "arrival": {
+      "airport": "Aomori",
+      "timezone": "Asia/Tokyo",
+      "iata": "AOJ",
+      "icao": "RJSA",
+      "terminal": null,
+      "gate": "2",
+      "delay": null,
+      "scheduled": "2023-12-08T07:35:00+00:00",
+      "estimated": "2023-12-08T07:35:00+00:00",
+      "actual": null,
+      "estimated_runway": null,
+      "actual_runway": null
+    },
+    "airline": {
+      "name": "JAL",
+      "iata": "JL",
+      "icao": "JAL"
+    },
+    "flight": {
+      "number": "140",
+      "iata": "JL140",
+      "icao": "JAL140"
+    },
+    "aircraft": null,
+    "live": null
+  },
+  {
+    "flight_date": "2023-12-08",
+    "flight_status": "scheduled",
+    "departure": {
+      "airport": "Aomori",
+      "timezone": "Asia/Tokyo",
+      "iata": "AOJ",
+      "icao": "RJSA",
+      "terminal": null,
+      "gate": "2",
+      "delay": null,
+      "scheduled": "2023-12-08T07:35:00+00:00",
+      "estimated": "2023-12-08T07:35:00+00:00",
+      "actual": null,
+      "estimated_runway": null,
+      "actual_runway": null
+    },
+    "arrival": {
+      "airport": "Haneda Airport",
+      "timezone": "Asia/Tokyo",
+      "iata": "HND",
+      "icao": "RJTT",
+      "terminal": "1",
+      "gate": null,
+      "baggage": null,
+      "delay": null,
+      "scheduled": "2023-12-08T09:00:00+00:00",
+      "estimated": "2023-12-08T09:00:00+00:00",
+      "actual": null,
+      "estimated_runway": null,
+      "actual_runway": null
+    },
+    "airline": {
+      "name": "Vistara",
+      "iata": "UK",
+      "icao": "VTI"
+    },
+    "flight": {
+      "number": "2006",
+      "iata": "UK2006",
+      "icao": "VTI2006"
+    },
+    "aircraft": null,
+    "live": null
+  },
+  {
+    "flight_date": "2023-12-08",
+    "flight_status": "scheduled",
+    "departure": {
+      "airport": "Aomori",
+      "timezone": "Asia/Tokyo",
+      "iata": "AOJ",
+      "icao": "RJSA",
+      "terminal": null,
+      "gate": "2",
+      "delay": null,
+      "scheduled": "2023-12-08T07:35:00+00:00",
+      "estimated": "2023-12-08T07:35:00+00:00",
+      "actual": null,
+      "estimated_runway": null,
+      "actual_runway": null
+    },
+    "arrival": {
+      "airport": "Haneda Airport",
+      "timezone": "Asia/Tokyo",
+      "iata": "HND",
+      "icao": "RJTT",
+      "terminal": "1",
+      "gate": null,
+      "baggage": null,
+      "delay": null,
+      "scheduled": "2023-12-08T09:00:00+00:00",
+      "estimated": "2023-12-08T09:00:00+00:00",
+      "actual": null,
+      "estimated_runway": null,
+      "actual_runway": null
+    },
+    "airline": {
+      "name": "Hawaiian Airlines",
+      "iata": "HA",
+      "icao": "HAL"
+    },
+    "flight": {
+      "number": "5042",
+      "iata": "HA5042",
+      "icao": "HAL5042"
+    },
+    "aircraft": null,
+    "live": null
+  }
+]
