@@ -21,6 +21,7 @@ class graghic(flight_data):
         self.top_frame = CTkFrame(self.root, corner_radius=20)
         self.top_frame.pack(side=LEFT, fill=Y)
 
+        self.root.bind("<Control-s>", lambda event: self.Apply())
         # ======================================================Fligth frame======================================
         CTkLabel(self.top_frame, text="Fligth").pack()
         self.flight_frame = CTkFrame(self.top_frame, corner_radius=10)
@@ -125,6 +126,7 @@ class graghic(flight_data):
         # Map View
         self.map = TkinterMapView(self.down_frame.tab("Map view"), width=1100)
         self.map.pack(fill=BOTH, expand=True, pady=(0, 20))
+        self.map.set_zoom(0)
         CTkButton(self.down_frame.tab("Map view"), text="Show all pathes", command=self.showAllPath).pack()
 
     def Apply(self):
@@ -189,11 +191,12 @@ class graghic(flight_data):
             self.set_arr_icao(self.arr_icao)
 
         self.data = self.get_json()
-        #self.data = json.load(open("data.json"))
+        # self.data = json.load(open("data.json"))
 
         if self.data.get("error") == None:
             self.geoData = self.update_geoData()
-            #self.geoData = json.load(open("geoData.json"))
+            # self.geoData = json.load(open("geoData.json"))
+            self.mergeData()
             self.flight_map()
             self.flight_list()
         else:
@@ -253,6 +256,8 @@ class graghic(flight_data):
 
     def flight_map(self):
         self.all_paths = list()
+        self.map.delete_all_path()
+        self.map.delete_all_marker()
         for iata in self.geoData.keys():
             self.geoData[iata]["marker"] = self.map.set_marker(self.geoData[iata]["lat"],
                                                                self.geoData[iata]["lon"],
@@ -297,6 +302,21 @@ class graghic(flight_data):
     def showAllPath(self):
         for path in self.all_paths:
             self.map.set_path(path.position_list, data=path.data, command=self.pathClick)
+
+    def mergeData(self):
+        for i in range(len(self.data["data"])):
+            dep_iata = self.data["data"][i]["departure"]["iata"]
+            if self.data["data"][i]["departure"]["timezone"] == None:
+                self.data["data"][i]["departure"]["timezone"] = self.geoData[dep_iata]["timezone"]
+            if self.data["data"][i]["departure"]["airport"] == None:
+                self.data["data"][i]["departure"]["airport"]= self.geoData[dep_iata]["name"]
+
+            arr_iata = self.data["data"][i]["arrival"]["iata"]
+            if self.data["data"][i]["arrival"]["timezone"] == None:
+                self.data["data"][i]["arrival"]["timezone"] = self.geoData[arr_iata]["timezone"]
+            if self.data["data"][i]["arrival"]["airport"] == None:
+                self.data["data"][i]["arrival"]["airport"]= self.geoData[arr_iata]["name"]
+
 
 
 if __name__ == "__main__":

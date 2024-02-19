@@ -56,7 +56,7 @@ class flight_data:
             if self.header[key] == None:
                 del self.header[key]
 
-        self.respone = requests.get(url=self.url, params=self.header, timeout=10)
+        self.respone = requests.get(url=self.url, params=self.header, timeout=7)
         if self.respone.status_code == 200:
             self.result = self.respone.json()
             return self.result
