@@ -21,7 +21,7 @@ class graghic(flight_data):
         self.top_frame = CTkFrame(self.root, corner_radius=20)
         self.top_frame.pack(side=LEFT, fill=Y)
 
-        self.root.bind("<Control-s>", lambda event: self.Apply())
+        self.root.bind("<Return>", lambda event: self.Apply())
         # ======================================================Fligth frame======================================
         CTkLabel(self.top_frame, text="Fligth").pack()
         self.flight_frame = CTkFrame(self.top_frame, corner_radius=10)

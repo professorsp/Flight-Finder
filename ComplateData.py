@@ -142,7 +142,7 @@ class ComplateData:
 
 
             map_widget.set_marker(dep_lat, dep_lon, text=f"Departure airport:\n{dep_airport}")
-            map_widget.set_marker(arr_lat, arr_lon, text=f"Arrival airport:\n{dep_airport}")
+            map_widget.set_marker(arr_lat, arr_lon, text=f"Arrival airport:\n{arr_airport}")
 
             des = int(
                 np.sqrt(
