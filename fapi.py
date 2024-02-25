@@ -60,6 +60,8 @@ class flight_data:
         if self.respone.status_code == 200:
             self.result = self.respone.json()
             return self.result
+        return {"error": f"{self.respone.status_code}: {self.respone.json()}"}
+
         """
         try:
             self.respone = requests.get(url=self.url, params=self.header, timeout=6)
