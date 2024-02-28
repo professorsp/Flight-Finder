@@ -1,8 +1,5 @@
-import json
-
 import requests
 from CTkMessagebox import CTkMessagebox
-from IPython.terminal.pt_inputhooks import tk
 from customtkinter import *
 from tkintermapview import TkinterMapView, canvas_path, canvas_position_marker
 
@@ -15,9 +12,10 @@ set_default_color_theme("theme/blue-theme.json")
 
 
 class graghic(flight_data):
-    def __init__(self, api_key, root: CTk):
+    def __init__(self, api_key: str, root):
         super().__init__(api_key)
         self.root = root
+        self.root.title("Flight Finder")
         self.top_frame = CTkFrame(self.root, corner_radius=20)
         self.top_frame.pack(side=LEFT, fill=Y)
 
@@ -190,7 +188,10 @@ class graghic(flight_data):
         else:
             self.set_arr_icao(self.arr_icao)
 
-        self.data = self.get_json()
+        try:
+            self.data = self.get_json()
+        except requests.exceptions.ReadTimeout:
+            print("aaaaaaaaaaaaaaaaa")
         # self.data = json.load(open("data.json"))
 
         if self.data.get("error") == None:
@@ -309,18 +310,22 @@ class graghic(flight_data):
             if self.data["data"][i]["departure"]["timezone"] == None:
                 self.data["data"][i]["departure"]["timezone"] = self.geoData[dep_iata]["timezone"]
             if self.data["data"][i]["departure"]["airport"] == None:
-                self.data["data"][i]["departure"]["airport"]= self.geoData[dep_iata]["name"]
+                self.data["data"][i]["departure"]["airport"] = self.geoData[dep_iata]["name"]
 
             arr_iata = self.data["data"][i]["arrival"]["iata"]
             if self.data["data"][i]["arrival"]["timezone"] == None:
                 self.data["data"][i]["arrival"]["timezone"] = self.geoData[arr_iata]["timezone"]
             if self.data["data"][i]["arrival"]["airport"] == None:
-                self.data["data"][i]["arrival"]["airport"]= self.geoData[arr_iata]["name"]
+                self.data["data"][i]["arrival"]["airport"] = self.geoData[arr_iata]["name"]
 
+    def startApp(self):
+        self.root.mainloop()
 
 
 if __name__ == "__main__":
     root = CTk()
-    root.title("Flight Finder")
-    aa = graghic(api_key="e5411ed9c2d96d6ee05e01743299d85b", root=root)
+
+    t = CTkToplevel(root)
+    aa = graghic(api_key="e5411ed9c2d96d6ee05e01743299d85b", root=t)
+
     root.mainloop()

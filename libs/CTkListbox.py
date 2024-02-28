@@ -8,24 +8,24 @@ import customtkinter
 
 class CTkListbox(customtkinter.CTkScrollableFrame):
     def __init__(
-        self,
-        master: any,
-        height: int = 100,
-        width: int = 200,
-        highlight_color: str = "default",
-        fg_color: str = "transparent",
-        bg_color: str = None,
-        text_color: str = "default",
-        hover_color: str = "default",
-        button_fg_color: str = "default",
-        border_width: int = 3,
-        font: tuple = "default",
-        multiple_selection: bool = False,
-        listvariable=None,
-        hover: bool = True,
-        command=None,
-        justify="left",
-        **kwargs,
+            self,
+            master: any,
+            height: int = 100,
+            width: int = 200,
+            highlight_color: str = "default",
+            fg_color: str = "transparent",
+            bg_color: str = None,
+            text_color: str = "default",
+            hover_color: str = "default",
+            button_fg_color: str = "default",
+            border_width: int = 3,
+            font: tuple = "default",
+            multiple_selection: bool = False,
+            listvariable=None,
+            hover: bool = True,
+            command=None,
+            justify="left",
+            **kwargs,
     ):
         super().__init__(
             master,
@@ -97,7 +97,7 @@ class CTkListbox(customtkinter.CTkScrollableFrame):
         """select the option"""
         for options in self.buttons.values():
             options.configure(fg_color=self.button_fg_color)
-        
+
         if isinstance(index, int):
             if index in self.buttons:
                 selected_button = self.buttons[index]
@@ -105,7 +105,7 @@ class CTkListbox(customtkinter.CTkScrollableFrame):
                 selected_button = list(self.buttons.values())[index]
         else:
             selected_button = self.buttons[index]
-  
+
         if self.multiple:
             if selected_button in self.selections:
                 self.selections.remove(selected_button)

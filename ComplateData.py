@@ -1,8 +1,8 @@
 import re
 
+import numpy as np
 from customtkinter import *
 from tkintermapview import TkinterMapView
-import numpy as np
 
 
 class ComplateData:
@@ -136,10 +136,9 @@ class ComplateData:
             arr_lat = self.geodata[flight["arrival"]["iata"]]["lat"]
             arr_lon = self.geodata[flight["arrival"]["iata"]]["lon"]
 
-            Clat = (arr_lat + dep_lat)/2
-            Clon = (arr_lon + dep_lon)/2
+            Clat = (arr_lat + dep_lat) / 2
+            Clon = (arr_lon + dep_lon) / 2
             map_widget.set_position(Clat, Clon)
-
 
             map_widget.set_marker(dep_lat, dep_lon, text=f"Departure airport:\n{dep_airport}")
             map_widget.set_marker(arr_lat, arr_lon, text=f"Arrival airport:\n{arr_airport}")
@@ -159,9 +158,6 @@ class ComplateData:
             map_widget.set_zoom(zoom=int(zoom))
 
             map_widget.set_path([(dep_lat, dep_lon), (arr_lat, arr_lon)])
-
-
-
 
 
 if __name__ == '__main__':

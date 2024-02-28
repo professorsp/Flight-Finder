@@ -5,8 +5,6 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 
-
-
 @app.route("/get_airport_data", methods=["GET"])
 def process_number():
     con = sqlite3.connect(database="iata_data.db")

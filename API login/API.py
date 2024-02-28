@@ -1,9 +1,10 @@
-from flask import Flask, request, jsonify
 import csv
-import re
-import pandas as pd
 import random
+import re
 import string
+
+import pandas as pd
+from flask import Flask, request, jsonify
 
 
 def is_valid_params_login(data):
@@ -212,4 +213,4 @@ def reset_password():
 
 
 if __name__ == '__main__':
-    app.run(port=5000, host="0.0.0.0")
+    app.run(port=80, host="0.0.0.0")
