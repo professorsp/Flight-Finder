@@ -1,73 +1,6 @@
-import csv
-import random
-import re
-import string
-
-import pandas as pd
 from flask import Flask, request, jsonify
 
-
-def is_valid_params_login(data):
-    allowed_params = {"username", "password"}
-    if len(data) < 2 or not set(data.keys()) <= allowed_params:
-        return False
-    return True
-
-
-def is_valid_params_signup(data):
-    allowed_params = {"username", "email", "password1", "password2"}
-    if len(data) < 4 or not set(data.keys()) <= allowed_params:
-        return False
-    return True
-
-
-def is_valid_username(username):
-    pattern = r"^[a-zA-Z0-9_]+$"
-    return bool(re.match(pattern, username))
-
-
-def is_valid_password(password):
-    pattern = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?!.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
-    return bool(re.match(pattern, password))
-
-
-def is_valid_email(email):
-    pattern = r"^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$"
-    return bool(re.match(pattern, email))
-
-
-def authentication(username, password):
-    with open("data.csv", 'r') as f:
-        file = csv.DictReader(f)
-        for row in file:
-            if row["username"] == username and row["password"] == password:
-                f.close()
-                return True
-    f.close()
-    return False
-
-
-def is_duplicate_username(username):
-    with open("data.csv", 'r') as f:
-        file = csv.DictReader(f)
-        for row in file:
-            if row["username"] == username:
-                f.close()
-                return True
-    f.close()
-    return False
-
-
-def is_duplicate_email(email):
-    with open("data.csv", 'r') as f:
-        file = csv.DictReader(f)
-        for row in file:
-            if row["email"] == email:
-                f.close()
-                return True
-    f.close()
-    return False
-
+from db import *
 
 app = Flask(__name__)
 
@@ -103,10 +36,7 @@ def signup():
         if is_duplicate_email(email):
             return jsonify({"message": "email is duplicate"}), 400
 
-        with open("data.csv", 'a', newline="") as f:
-            file = csv.DictWriter(f, fieldnames=["username", "password", "email"])
-            file.writerow({"username": username, "password": password1, "email": email})
-            f.close()
+        insert(username, password1, email)
 
         return jsonify({'message': 'successfull'}), 200
 
@@ -135,25 +65,6 @@ def login():
 
 
 # ============================================================================================================
-def is_valid_params_reset_password(data):
-    allowed_params = {"verification_code", "password1", "password2", "email"}
-    if len(data) < 3 or not set(data.keys()) <= allowed_params:
-        return False
-    return True
-
-
-def email_exist(email):
-    with open("data.csv", 'r') as file:
-        csvData = csv.DictReader(file)
-        result = False
-        for row in csvData:
-            if row["email"] == email:
-                result = True
-        return result
-
-
-def generate_verification_code():
-    return ''.join(random.choices(string.digits, k=6))
 
 
 codes = dict()
@@ -191,11 +102,12 @@ def reset_password():
     password1 = data.get("password1").strip()
     password2 = data.get("password2").strip()
     email = data.get("email").strip()
-    if password2 != password1:
-        return jsonify({"message": "passwords do not match"}), 400
 
     if not is_valid_password(password1):
         return jsonify({"message": "password invalid"}), 400
+
+    if password2 != password1:
+        return jsonify({"message": "passwords do not match"}), 400
 
     if not email_exist(email):
         return jsonify({"message": "email not exist"}), 400
@@ -203,10 +115,7 @@ def reset_password():
     if verification_code != codes.get(email):
         return jsonify({"message": "verification code incorrect"}), 400
 
-    df = pd.read_csv("data.csv")
-    condition = (df["email"] == email)
-    df.loc[condition, "password"] = password1
-    df.to_csv("data.csv", index=False)
+    chenge_password(email, password1)
     del codes[email]
     print(codes)
     return jsonify({"message": "password changed"})
