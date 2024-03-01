@@ -6,6 +6,7 @@ from tkintermapview import TkinterMapView, canvas_path, canvas_position_marker
 from ComplateData import ComplateData
 from fapi import flight_data
 from libs import CTkListbox
+import json
 
 set_appearance_mode("dark")
 set_default_color_theme("theme/blue-theme.json")
@@ -189,10 +190,10 @@ class graghic(flight_data):
             self.set_arr_icao(self.arr_icao)
 
         try:
-            self.data = self.get_json()
+            #self.data = self.get_json()
+            self.data = json.load(open("data.json"))
         except requests.exceptions.ReadTimeout:
             print("aaaaaaaaaaaaaaaaa")
-        # self.data = json.load(open("data.json"))
 
         if self.data.get("error") == None:
             self.geoData = self.update_geoData()
@@ -201,7 +202,7 @@ class graghic(flight_data):
             self.flight_map()
             self.flight_list()
         else:
-            print(f"{self.data.get("error")}")
+            print(f"{self.data.get('error')}")
 
     def flight_list(self):
         self.listbox.insert(0, "See your search results by clicking the <Apply> button")
