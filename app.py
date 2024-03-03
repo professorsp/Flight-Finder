@@ -1,3 +1,5 @@
+import json
+
 import requests
 from CTkMessagebox import CTkMessagebox
 from customtkinter import *
@@ -6,7 +8,6 @@ from tkintermapview import TkinterMapView, canvas_path, canvas_position_marker
 from ComplateData import ComplateData
 from fapi import flight_data
 from libs import CTkListbox
-import json
 
 set_appearance_mode("dark")
 set_default_color_theme("theme/blue-theme.json")
@@ -190,7 +191,7 @@ class graghic(flight_data):
             self.set_arr_icao(self.arr_icao)
 
         try:
-            #self.data = self.get_json()
+            # self.data = self.get_json()
             self.data = json.load(open("data.json"))
         except requests.exceptions.ReadTimeout:
             print("aaaaaaaaaaaaaaaaa")
@@ -319,14 +320,12 @@ class graghic(flight_data):
             if self.data["data"][i]["arrival"]["airport"] == None:
                 self.data["data"][i]["arrival"]["airport"] = self.geoData[arr_iata]["name"]
 
-    def startApp(self):
-        self.root.mainloop()
-
 
 if __name__ == "__main__":
     root = CTk()
-
+    root.withdraw()
     t = CTkToplevel(root)
+    t.protocol("WM_DELETE_WINDOW", root.destroy)
     aa = graghic(api_key="e5411ed9c2d96d6ee05e01743299d85b", root=t)
 
     root.mainloop()

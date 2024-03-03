@@ -10,6 +10,7 @@ from forgot_password import forgot_password
 class gg(CTk):
     def __init__(self):
         super().__init__()
+        self.bind("<Return>", lambda event: self.login())
         self.show_im = ImageTk.PhotoImage(
             Image.open("image\\show.png").resize((20, 20))
         )

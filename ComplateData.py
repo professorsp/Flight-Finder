@@ -1,6 +1,9 @@
 import re
+from io import BytesIO
 
 import numpy as np
+import requests
+from PIL import Image
 from customtkinter import *
 from tkintermapview import TkinterMapView
 
@@ -9,7 +12,7 @@ class ComplateData:
     def __init__(self, root: CTk, data: dict, geoData: dict):
         self.root = root
         self.data = data
-        print(self.data)
+
         self.geodata = geoData
 
         self.root.resizable(False, False)
@@ -27,8 +30,8 @@ class ComplateData:
 
             match = re.search(r"(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})", flight["departure"]["scheduled"])
             if match:
-                time = match.group(1)
-                date = match.group(2)
+                time = match.group(2)
+                date = match.group(1)
             else:
                 time = date = None
             (CTkLabel(dep_frame, text="Data: " + str(date), fg_color="#0F88B3", corner_radius=20)
@@ -65,8 +68,8 @@ class ComplateData:
 
             match = re.search(r"(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})", flight["arrival"]["scheduled"])
             if match:
-                time = match.group(1)
-                date = match.group(2)
+                time = match.group(2)
+                date = match.group(1)
             else:
                 time = date = None
             (CTkLabel(arr_frame, text="Data: " + str(date), fg_color="#0F88B3", corner_radius=20)
@@ -126,6 +129,9 @@ class ComplateData:
                       corner_radius=20)
              .grid(row=4, column=1, sticky=NW, padx=15, pady=5))
 
+            CTkButton(self.tabView.tab(tab), text="Receive flight ticket", fg_color="#54A6B2", text_color="#FFFF00",
+                      command=lambda data=flight: self.ticket(data)).grid(row=2, column=0,sticky=E)
+
             map_frame = CTkFrame(self.tabView.tab(tab), bg_color="black")
             map_frame.grid(row=0, column=1, rowspan=3, padx=15, pady=15)
             map_widget = TkinterMapView(map_frame, width=750, height=750, corner_radius=50, bg_color="#1A5F78")
@@ -158,6 +164,35 @@ class ComplateData:
             map_widget.set_zoom(zoom=int(zoom))
 
             map_widget.set_path([(dep_lat, dep_lon), (arr_lat, arr_lon)])
+
+    def ticket(self, data: dict):
+
+        url = "http://127.0.0.1:8000/get_ticket"
+
+        match = re.search(r"(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})", data["departure"]["scheduled"])
+        if match:
+            time = match.group(2)
+            date = match.group(1)
+        else:
+            time = date = None
+
+        r = requests.post(url=url, json={
+            "ticket": data["airline"],
+            "from": "IR",
+            "to": "JP",
+            "flight": data["flight"]["iata"],
+            "date": date.strip(),
+            "time": time.strip().replace("-", "/"),
+            "gate": data["departure"]["gate"],
+            "seat": "1000",
+            "fullname": "Mohammad33"
+
+        })
+
+        img = Image.open(BytesIO(r.content))
+        img.save("ticket.png", "PNG")
+        img.show()
+
 
 
 if __name__ == '__main__':
