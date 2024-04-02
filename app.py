@@ -1,5 +1,3 @@
-import json
-
 import requests
 from CTkMessagebox import CTkMessagebox
 from customtkinter import *
@@ -15,7 +13,7 @@ set_default_color_theme("theme/blue-theme.json")
 
 class graghic(flight_data):
     def __init__(self, api_key: str, root):
-        print("start graghic")
+
         super().__init__(api_key)
         self.root = root
         self.root.title("Flight Finder")
@@ -131,7 +129,7 @@ class graghic(flight_data):
             text="Show all pathes",
             command=self.showAllPath,
         ).pack()
-        print("stop")
+
     def Apply(self):
         # set_fligth_status
         self.set_fligth_status(self.status_input.get())
@@ -194,8 +192,8 @@ class graghic(flight_data):
             self.set_arr_icao(self.arr_icao)
 
         try:
-            # self.data = self.get_json()
-            self.data = json.load(open("data.json"))
+            self.data = self.get_json()
+            # elf.data = json.load(open("data.json"))
         except requests.exceptions.ReadTimeout:
             print("aaaaaaaaaaaaaaaaa")
 
@@ -270,7 +268,7 @@ class graghic(flight_data):
             self.geoData[iata]["marker"] = self.map.set_marker(
                 self.geoData[iata]["lat"],
                 self.geoData[iata]["lon"],
-                self.geoData[iata]["name"],
+                iata,
                 data=iata,
                 command=self.markerClick,
             )
@@ -295,14 +293,14 @@ class graghic(flight_data):
         self.usefull_flight = list()
         for path in self.map.canvas_path_list:
             if (
-                path.position_list == env.position_list
-                or path.position_list == env.position_list[::-1]
+                    path.position_list == env.position_list
+                    or path.position_list == env.position_list[::-1]
             ):
                 for flight in self.data["data"]:
                     if (
-                        flight["departure"]["iata"] == path.data[0]
-                        and flight["arrival"]["iata"] == path.data[1]
-                        and flight["flight"] == path.data[2]
+                            flight["departure"]["iata"] == path.data[0]
+                            and flight["arrival"]["iata"] == path.data[1]
+                            and flight["flight"] == path.data[2]
                     ):
                         self.usefull_flight.append(flight)
 

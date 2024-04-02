@@ -58,9 +58,11 @@ def login():
         if not authentication(username, password):
             return jsonify({"message": "username or password not incorect"}), 400
 
+
         return jsonify({"message": "successfull"}), 200
 
     except Exception as e:
+        print(e)
         return jsonify({"message": "server not respone"}), 500
 
 

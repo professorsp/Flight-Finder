@@ -40,7 +40,8 @@ def authentication(username, password):
     c.execute("SELECT password FROM users WHERE username = ?", (username,))
     row = c.fetchone()
     if row is not None:
-        result = True
+        if password == row[0]:
+            result = True
 
     c.close()
     conn.close()

@@ -22,7 +22,7 @@ class gg(CTk):
         self.im = ImageTk.PhotoImage(
             Image.open("image\\im2.jpg").resize((560, 800))
         )
-        self.Lim = CTkLabel(self, image=self.im)
+        self.Lim = CTkLabel(self, image=self.im, text="")
         self.Lim.grid(row=0, column=0, padx=(0, 20))
 
         self.tabview = CTkTabview(self)

@@ -129,8 +129,9 @@ class ComplateData:
                       corner_radius=20)
              .grid(row=4, column=1, sticky=NW, padx=15, pady=5))
 
-            CTkButton(self.tabView.tab(tab), text="Receive flight ticket", fg_color="#54A6B2", text_color="#FFFF00",
-                      command=lambda data=flight: self.ticket(data)).grid(row=2, column=0,sticky=E)
+            if flight["flight_status"]== "scheduled":
+                CTkButton(self.tabView.tab(tab), text="Receive flight ticket", fg_color="#54A6B2", text_color="#FFFF00",
+                          command=lambda data=flight: self.ticket(data)).grid(row=2, column=0, sticky=E)
 
             map_frame = CTkFrame(self.tabView.tab(tab), bg_color="black")
             map_frame.grid(row=0, column=1, rowspan=3, padx=15, pady=15)
@@ -192,7 +193,6 @@ class ComplateData:
         img = Image.open(BytesIO(r.content))
         img.save("ticket.png", "PNG")
         img.show()
-
 
 
 if __name__ == '__main__':
