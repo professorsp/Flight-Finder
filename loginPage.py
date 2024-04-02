@@ -1,4 +1,5 @@
 import requests
+
 from PIL import Image, ImageTk
 from customtkinter import *
 

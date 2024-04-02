@@ -15,6 +15,7 @@ set_default_color_theme("theme/blue-theme.json")
 
 class graghic(flight_data):
     def __init__(self, api_key: str, root):
+        print("start graghic")
         super().__init__(api_key)
         self.root = root
         self.root.title("Flight Finder")
@@ -102,9 +103,7 @@ class graghic(flight_data):
         self.button_frame = CTkFrame(self.top_frame, corner_radius=10)
         self.button_frame.pack(padx=20, pady=(0, 20))
 
-        CTkButton(
-            self.button_frame, text="Apply", height=65, command=self.Apply
-        ).pack()
+        CTkButton(self.button_frame, text="Apply", height=65, command=self.Apply).pack()
 
         # ==========================================down_frame=================================
 
@@ -127,8 +126,12 @@ class graghic(flight_data):
         self.map = TkinterMapView(self.down_frame.tab("Map view"), width=1100)
         self.map.pack(fill=BOTH, expand=True, pady=(0, 20))
         self.map.set_zoom(0)
-        CTkButton(self.down_frame.tab("Map view"), text="Show all pathes", command=self.showAllPath).pack()
-
+        CTkButton(
+            self.down_frame.tab("Map view"),
+            text="Show all pathes",
+            command=self.showAllPath,
+        ).pack()
+        print("stop")
     def Apply(self):
         # set_fligth_status
         self.set_fligth_status(self.status_input.get())
@@ -252,7 +255,9 @@ class graghic(flight_data):
             iatas.append(self.data["data"][i]["arrival"]["iata"])
 
         iatas = ",".join(set(iatas))
-        respone = requests.get(url=f"http://127.0.0.1:5000/get_airport_data?iatas={iatas}")
+        respone = requests.get(
+            url=f"http://127.0.0.1:5000/get_airport_data?iatas={iatas}"
+        )
         if respone.status_code == 200 or respone.status_code == 400:
             data = respone.json()
             return data
@@ -262,29 +267,43 @@ class graghic(flight_data):
         self.map.delete_all_path()
         self.map.delete_all_marker()
         for iata in self.geoData.keys():
-            self.geoData[iata]["marker"] = self.map.set_marker(self.geoData[iata]["lat"],
-                                                               self.geoData[iata]["lon"],
-                                                               self.geoData[iata]["name"],
-                                                               data=iata,
-                                                               command=self.markerClick)
+            self.geoData[iata]["marker"] = self.map.set_marker(
+                self.geoData[iata]["lat"],
+                self.geoData[iata]["lon"],
+                self.geoData[iata]["name"],
+                data=iata,
+                command=self.markerClick,
+            )
 
         for flight in self.data["data"]:
             del flight["flight"]["codeshared"]
-            path = self.map.set_path([(self.geoData[flight["departure"]["iata"]]["marker"].position),
-                                      (self.geoData[flight["arrival"]["iata"]]["marker"].position)],
-                                     command=self.pathClick,
-                                     data=(flight["departure"]["iata"], flight["arrival"]["iata"], flight["flight"])
-                                     )
+            path = self.map.set_path(
+                [
+                    (self.geoData[flight["departure"]["iata"]]["marker"].position),
+                    (self.geoData[flight["arrival"]["iata"]]["marker"].position),
+                ],
+                command=self.pathClick,
+                data=(
+                    flight["departure"]["iata"],
+                    flight["arrival"]["iata"],
+                    flight["flight"],
+                ),
+            )
             self.all_paths.append(path)
 
     def pathClick(self, env: canvas_path.CanvasPath):
         self.usefull_flight = list()
         for path in self.map.canvas_path_list:
-            if path.position_list == env.position_list or path.position_list == env.position_list[::-1]:
+            if (
+                path.position_list == env.position_list
+                or path.position_list == env.position_list[::-1]
+            ):
                 for flight in self.data["data"]:
-                    if flight["departure"]["iata"] == path.data[0] and \
-                            flight["arrival"]["iata"] == path.data[1] and \
-                            flight["flight"] == path.data[2]:
+                    if (
+                        flight["departure"]["iata"] == path.data[0]
+                        and flight["arrival"]["iata"] == path.data[1]
+                        and flight["flight"] == path.data[2]
+                    ):
                         self.usefull_flight.append(flight)
 
         self.top_window = CTkToplevel(self.root)
@@ -300,25 +319,37 @@ class graghic(flight_data):
 
         self.map.delete_all_path()
         for path in usefull:
-            self.map.set_path(path.position_list, data=path.data, command=self.pathClick)
+            self.map.set_path(
+                path.position_list, data=path.data, command=self.pathClick
+            )
 
     def showAllPath(self):
         for path in self.all_paths:
-            self.map.set_path(path.position_list, data=path.data, command=self.pathClick)
+            self.map.set_path(
+                path.position_list, data=path.data, command=self.pathClick
+            )
 
     def mergeData(self):
         for i in range(len(self.data["data"])):
             dep_iata = self.data["data"][i]["departure"]["iata"]
             if self.data["data"][i]["departure"]["timezone"] == None:
-                self.data["data"][i]["departure"]["timezone"] = self.geoData[dep_iata]["timezone"]
+                self.data["data"][i]["departure"]["timezone"] = self.geoData[dep_iata][
+                    "timezone"
+                ]
             if self.data["data"][i]["departure"]["airport"] == None:
-                self.data["data"][i]["departure"]["airport"] = self.geoData[dep_iata]["name"]
+                self.data["data"][i]["departure"]["airport"] = self.geoData[dep_iata][
+                    "name"
+                ]
 
             arr_iata = self.data["data"][i]["arrival"]["iata"]
             if self.data["data"][i]["arrival"]["timezone"] == None:
-                self.data["data"][i]["arrival"]["timezone"] = self.geoData[arr_iata]["timezone"]
+                self.data["data"][i]["arrival"]["timezone"] = self.geoData[arr_iata][
+                    "timezone"
+                ]
             if self.data["data"][i]["arrival"]["airport"] == None:
-                self.data["data"][i]["arrival"]["airport"] = self.geoData[arr_iata]["name"]
+                self.data["data"][i]["arrival"]["airport"] = self.geoData[arr_iata][
+                    "name"
+                ]
 
 
 if __name__ == "__main__":

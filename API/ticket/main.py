@@ -4,6 +4,8 @@ import requests
 
 import var
 
+
+
 command = [
     r"C:\Program Files\wkhtmltopdf\bin\wkhtmltoimage.exe",
     "--enable-local-file-access",
