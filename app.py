@@ -1,11 +1,15 @@
+import concurrent.futures
+import threading
+from tkinter.ttk import Treeview
+
 import requests
 from CTkMessagebox import CTkMessagebox
 from customtkinter import *
 from tkintermapview import TkinterMapView, canvas_path, canvas_position_marker
 
+import style
 from ComplateData import ComplateData
 from fapi import flight_data
-from libs import CTkListbox
 
 set_appearance_mode("dark")
 set_default_color_theme("theme/blue-theme.json")
@@ -13,14 +17,14 @@ set_default_color_theme("theme/blue-theme.json")
 
 class graghic(flight_data):
     def __init__(self, api_key: str, root):
-
+        style.run()
         super().__init__(api_key)
         self.root = root
         self.root.title("Flight Finder")
         self.top_frame = CTkFrame(self.root, corner_radius=20)
         self.top_frame.pack(side=LEFT, fill=Y)
 
-        self.root.bind("<Return>", lambda event: self.Apply())
+        self.root.bind("<Return>", lambda event: self.run_requests_thread())
         # ======================================================Fligth frame======================================
         CTkLabel(self.top_frame, text="Fligth").pack()
         self.flight_frame = CTkFrame(self.top_frame, corner_radius=10)
@@ -101,7 +105,12 @@ class graghic(flight_data):
         self.button_frame = CTkFrame(self.top_frame, corner_radius=10)
         self.button_frame.pack(padx=20, pady=(0, 20))
 
-        CTkButton(self.button_frame, text="Apply", height=65, command=self.Apply).pack()
+        CTkButton(
+            self.button_frame,
+            text="Apply",
+            height=65,
+            command=self.run_requests_thread
+        ).pack()
 
         # ==========================================down_frame=================================
 
@@ -111,26 +120,49 @@ class graghic(flight_data):
         self.down_frame.add("Tabel view")
 
         # Tabel View
-        self.listbox = CTkListbox.CTkListbox(
-            self.down_frame.tab("Tabel view"),
-            font=("Hack Regular", 12),
-            command=self.show_fullData,
-            width=1100,
+        f1 = CTkFrame(self.down_frame.tab("Tabel view"))
+        f1.pack(fill=BOTH, expand=1)
+
+        bs = CTkScrollbar(f1, orientation=HORIZONTAL)
+        bs.pack(side=BOTTOM, fill="x")
+
+        rs = CTkScrollbar(f1)
+        rs.pack(side="right", fill="y")
+
+        columns = (
+            "Status", "Date", "Departure airport", "Arrival airport", "Takeoff time", "Landing time", "flight iata",
+            "Airline")
+        self.treeview = Treeview(
+            master=f1,
+            columns=columns,
+            yscrollcommand=rs.set,
+            xscrollcommand=bs.set,
         )
-        self.listbox.pack(fill=BOTH, expand=True, pady=(0, 20))
-        self.listbox.insert(0, "See your search results by clicking the <Apply> button")
+        for column in columns:
+            self.treeview.heading(column, text=column)
+            self.treeview.column(column, width=50)
+        self.treeview["show"] = "headings"
+        self.treeview.pack(fill="both", expand=1, padx=20, pady=20)
+
+        bs.configure(command=self.treeview.xview)
+        rs.configure(command=self.treeview.yview)
+
 
         # Map View
-        self.map = TkinterMapView(self.down_frame.tab("Map view"), width=1100)
-        self.map.pack(fill=BOTH, expand=True, pady=(0, 20))
-        self.map.set_zoom(0)
-        CTkButton(
-            self.down_frame.tab("Map view"),
-            text="Show all pathes",
-            command=self.showAllPath,
-        ).pack()
+        def create_map():
+            self.map = TkinterMapView(self.down_frame.tab("Map view"), width=1100)
+            self.map.pack(fill=BOTH, expand=True, pady=(0, 20))
+            self.map.set_zoom(0)
+            CTkButton(
+                self.down_frame.tab("Map view"),
+                text="Show all pathes",
+                command=self.showAllPath,
+            ).pack()
+
+        threading.Thread(target=create_map).start()
 
     def Apply(self):
+
         # set_fligth_status
         self.set_fligth_status(self.status_input.get())
         # set_flight_number
@@ -193,53 +225,37 @@ class graghic(flight_data):
 
         try:
             self.data = self.get_json()
-            # elf.data = json.load(open("data.json"))
         except requests.exceptions.ReadTimeout:
-            print("aaaaaaaaaaaaaaaaa")
+            print("Timeout")
+            return
 
         if self.data.get("error") == None:
             self.geoData = self.update_geoData()
-            # self.geoData = json.load(open("geoData.json"))
             self.mergeData()
-            self.flight_map()
-            self.flight_list()
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                executor.submit(self.flight_map)
+                executor.submit(self.flight_list)
         else:
             print(f"{self.data.get('error')}")
 
     def flight_list(self):
-        self.listbox.insert(0, "See your search results by clicking the <Apply> button")
-        self.listbox.delete(0, "end")
+        self.treeview.delete(*self.treeview.get_children())
         self.count = self.data["pagination"]["count"]
         for i in range(self.count):
-            date = self.data["data"][i]["flight_date"]
+            self.treeview.insert("",
+                                 i,
+                                 values=(
+                                     self.data["data"][i]["flight_status"],
+                                     self.data["data"][i]["flight_date"],
+                                     self.data["data"][i]["departure"]["airport"],
+                                     self.data["data"][i]["arrival"]["airport"],
+                                     self.data["data"][i]["departure"]["scheduled"][:16],
+                                     self.data["data"][i]["arrival"]["scheduled"][:16],
+                                     self.data["data"][i]["flight"]["iata"],
+                                     self.data["data"][i]["airline"]["name"]
 
-            status = self.data["data"][i]["flight_status"]
-            if status != None:
-                status = status + (" " * (9 - len(status)))
-            else:
-                status = "None     "
-
-            number = self.data["data"][i]["flight"]["number"]
-            if number != None:
-                number = number + (" " * (4 - len(number)))
-            else:
-                number = "None"
-
-            airline_name = self.data["data"][i]["airline"]["name"]
-
-            iata = self.data["data"][i]["flight"]["iata"]
-            if iata != None:
-                iata = iata + (" " * (7 - len(iata)))
-            else:
-                iata = "None" + (" " * 3)
-
-            index = f"{i + 1}/{self.count}->"
-            index = index + (" " * (9 - len(index)))
-
-            self.listbox.insert(
-                i,
-                f"{index} Date: {date}      Status: {status}      Number: {number}      Flight iata:{iata}       Airline name: {airline_name}",
-            )
+                                 ),
+                                 )
 
     def show_fullData(self, val: str):
         index = int(val[: (val.index("/"))]) - 1
@@ -349,12 +365,18 @@ class graghic(flight_data):
                     "name"
                 ]
 
+    def run_requests_thread(self):
+        self.requests_thread = threading.Thread(target=self.Apply)
+        self.requests_thread.start()
+
 
 if __name__ == "__main__":
+    import sys
+
     root = CTk()
     root.withdraw()
     t = CTkToplevel(root)
-    t.protocol("WM_DELETE_WINDOW", root.destroy)
-    aa = graghic(api_key="e5411ed9c2d96d6ee05e01743299d85b", root=t)
+    t.protocol("WM_DELETE_WINDOW", sys.exit)
+    aa = graghic(api_key="12089a0890294cc08148c89840b5b95a", root=t)
 
     root.mainloop()
