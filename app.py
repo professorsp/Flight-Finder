@@ -16,7 +16,7 @@ set_default_color_theme("theme/blue-theme.json")
 
 
 class graghic(flight_data):
-    def __init__(self, api_key: str, root:CTkToplevel):
+    def __init__(self, api_key: str, root: CTkToplevel):
         style.run()
         super().__init__(api_key)
         self.root = root
@@ -146,10 +146,11 @@ class graghic(flight_data):
             self.treeview.column(column, width=50)
         self.treeview["show"] = "headings"
         self.treeview.pack(fill="both", expand=1, padx=20, pady=20)
-        self.treeview.bind("<ButtonRelease-1>", lambda env: self.show_all_data(
-            [self.data["data"][int(self.treeview.focus().replace("I", ""), 16) - 1]]))
         bs.configure(command=self.treeview.xview)
         rs.configure(command=self.treeview.yview)
+
+        self.treeview.bind("<ButtonRelease-1>", lambda env: self.show_all_data(
+            [self.data["data"][self.treeview.index(self.treeview.focus())]]))
 
         # Map View
         def create_map():
@@ -240,7 +241,8 @@ class graghic(flight_data):
             else:
                 print(f"{self.data.get('error')}")
         except requests.exceptions.ReadTimeout:
-            print("Timeout")
+            from tkinter import messagebox
+            messagebox.showerror("Timeout", "Your request took too long. Please check the internet and try again")
 
         self.root.bind("<Return>", lambda event: self.run_requests_thread())
         self.apply_button.configure(state=NORMAL, text="Apply")
