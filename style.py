@@ -13,7 +13,7 @@ def run():
                     fieldbackground="#343638",
                     bordercolor="#ff0000",
                     borderwidth=8,
-                    font=("Arial", 10),
+                    font=("Arial", 12),
                     relief="ridge",
                     )
     style.map('Treeview', background=[('selected', '#22559b')])

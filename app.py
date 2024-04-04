@@ -16,7 +16,7 @@ set_default_color_theme("theme/blue-theme.json")
 
 
 class graghic(flight_data):
-    def __init__(self, api_key: str, root):
+    def __init__(self, api_key: str, root:CTkToplevel):
         style.run()
         super().__init__(api_key)
         self.root = root
@@ -105,12 +105,13 @@ class graghic(flight_data):
         self.button_frame = CTkFrame(self.top_frame, corner_radius=10)
         self.button_frame.pack(padx=20, pady=(0, 20))
 
-        CTkButton(
+        self.apply_button = CTkButton(
             self.button_frame,
             text="Apply",
             height=65,
             command=self.run_requests_thread
-        ).pack()
+        )
+        self.apply_button.pack()
 
         # ==========================================down_frame=================================
 
@@ -138,15 +139,17 @@ class graghic(flight_data):
             yscrollcommand=rs.set,
             xscrollcommand=bs.set,
         )
+        self.treeview.tag_configure("odd", background="#2B2B2B")
+        self.treeview.tag_configure("even", background="#242424")
         for column in columns:
             self.treeview.heading(column, text=column)
             self.treeview.column(column, width=50)
         self.treeview["show"] = "headings"
         self.treeview.pack(fill="both", expand=1, padx=20, pady=20)
-
+        self.treeview.bind("<ButtonRelease-1>", lambda env: self.show_all_data(
+            [self.data["data"][int(self.treeview.focus().replace("I", ""), 16) - 1]]))
         bs.configure(command=self.treeview.xview)
         rs.configure(command=self.treeview.yview)
-
 
         # Map View
         def create_map():
@@ -162,6 +165,8 @@ class graghic(flight_data):
         threading.Thread(target=create_map).start()
 
     def Apply(self):
+        self.apply_button.configure(state=DISABLED, text="Searching...")
+        self.root.unbind("<Return>")
 
         # set_fligth_status
         self.set_fligth_status(self.status_input.get())
@@ -225,22 +230,25 @@ class graghic(flight_data):
 
         try:
             self.data = self.get_json()
+
+            if self.data.get("error") == None:
+                self.geoData = self.update_geoData()
+                self.mergeData()
+                with concurrent.futures.ThreadPoolExecutor() as executor:
+                    executor.submit(self.flight_map)
+                    executor.submit(self.flight_list)
+            else:
+                print(f"{self.data.get('error')}")
         except requests.exceptions.ReadTimeout:
             print("Timeout")
-            return
 
-        if self.data.get("error") == None:
-            self.geoData = self.update_geoData()
-            self.mergeData()
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                executor.submit(self.flight_map)
-                executor.submit(self.flight_list)
-        else:
-            print(f"{self.data.get('error')}")
+        self.root.bind("<Return>", lambda event: self.run_requests_thread())
+        self.apply_button.configure(state=NORMAL, text="Apply")
 
     def flight_list(self):
         self.treeview.delete(*self.treeview.get_children())
         self.count = self.data["pagination"]["count"]
+        tag = "odd"
         for i in range(self.count):
             self.treeview.insert("",
                                  i,
@@ -254,13 +262,9 @@ class graghic(flight_data):
                                      self.data["data"][i]["flight"]["iata"],
                                      self.data["data"][i]["airline"]["name"]
 
-                                 ),
+                                 ), tags=tag
                                  )
-
-    def show_fullData(self, val: str):
-        index = int(val[: (val.index("/"))]) - 1
-        self.top_window = CTkToplevel()
-        com = ComplateData(self.top_window, [self.data["data"][index]], self.geoData)
+            tag = "odd" if tag == "even" else "even"
 
     def update_geoData(self):
         iatas = list()
@@ -320,11 +324,13 @@ class graghic(flight_data):
                     ):
                         self.usefull_flight.append(flight)
 
-        self.top_window = CTkToplevel(self.root)
-        com = ComplateData(self.top_window, self.usefull_flight, self.geoData)
+        self.show_all_data(self.usefull_flight)
+
+    def show_all_data(self, data):
+        top = CTkToplevel(self.root)
+        com = ComplateData(top, data, self.geoData)
 
     def markerClick(self, env: canvas_position_marker.CanvasPositionMarker):
-        # path = canvas_path.CanvasPath()
         usefull = list()
         iata = env.data
         for path in self.all_paths:
@@ -366,6 +372,7 @@ class graghic(flight_data):
                 ]
 
     def run_requests_thread(self):
+        print("run_requests_thread")
         self.requests_thread = threading.Thread(target=self.Apply)
         self.requests_thread.start()
 
@@ -377,6 +384,6 @@ if __name__ == "__main__":
     root.withdraw()
     t = CTkToplevel(root)
     t.protocol("WM_DELETE_WINDOW", sys.exit)
-    aa = graghic(api_key="12089a0890294cc08148c89840b5b95a", root=t)
+    aa = graghic(api_key="604bc1fecafa0bc1a212fca237e0d18a", root=t)
 
     root.mainloop()

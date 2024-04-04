@@ -114,7 +114,7 @@ class gg(CTk):
             self.withdraw()
             self.t = CTkToplevel(self)
             self.t.protocol("WM_DELETE_WINDOW", self.close_all)
-            self.aa = app.graghic(api_key="12089a0890294cc08148c89840b5b95a", root=self.t)
+            self.aa = app.graghic(api_key="604bc1fecafa0bc1a212fca237e0d18a", root=self.t)
 
     def close_all(self):
         self.t.destroy()

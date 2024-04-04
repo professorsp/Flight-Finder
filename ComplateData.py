@@ -1,4 +1,5 @@
 import re
+import threading
 from io import BytesIO
 
 import numpy as np
@@ -162,38 +163,37 @@ class ComplateData:
                     des, [0, 402], [map_widget.min_zoom, map_widget.max_zoom]
                 )
             )
-            map_widget.set_zoom(zoom=int(zoom))
+            map_widget.set_zoom(zoom=int(1))
 
             map_widget.set_path([(dep_lat, dep_lon), (arr_lat, arr_lon)])
 
     def ticket(self, data: dict):
+        def run():
+            url = "http://127.0.0.1:8000/get_ticket"
+            match = re.search(r"(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})", data["departure"]["scheduled"])
+            if match:
+                time = match.group(2)
+                date = match.group(1)
+            else:
+                time = date = None
 
-        url = "http://127.0.0.1:8000/get_ticket"
+            r = requests.post(url=url, json={
+                "ticket": data["airline"],
+                "from": "IR",
+                "to": "JP",
+                "flight": data["flight"]["iata"],
+                "date": date.strip(),
+                "time": time.strip().replace("-", "/"),
+                "gate": data["departure"]["gate"],
+                "seat": "1000",
+                "fullname": "Mohammad33"
 
-        match = re.search(r"(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})", data["departure"]["scheduled"])
-        if match:
-            time = match.group(2)
-            date = match.group(1)
-        else:
-            time = date = None
+            })
 
-        r = requests.post(url=url, json={
-            "ticket": data["airline"],
-            "from": "IR",
-            "to": "JP",
-            "flight": data["flight"]["iata"],
-            "date": date.strip(),
-            "time": time.strip().replace("-", "/"),
-            "gate": data["departure"]["gate"],
-            "seat": "1000",
-            "fullname": "Mohammad33"
-
-        })
-
-        img = Image.open(BytesIO(r.content))
-        img.save("ticket.png", "PNG")
-        img.show()
-
+            img = Image.open(BytesIO(r.content))
+            #img.save("ticket.png", "PNG")
+            img.show()
+        threading.Thread(target=run).start()
 
 if __name__ == '__main__':
     import json
